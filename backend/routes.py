@@ -75,7 +75,7 @@ def login():
     conn.close()
 
     if user:
-        identity_data = f"{username}:{user['course']}"  # 🔥 Encode as string
+        identity_data = f"{username}:{user['course']}"  
         access_token = create_access_token(identity=identity_data)
         return jsonify({"access_token": access_token}), 200
     else:
@@ -85,11 +85,11 @@ def login():
 @routes.route('/protected', methods=['GET'])
 @jwt_required()
 def protected():
-    identity = get_jwt_identity()  # Now in format "username:course"
+    identity = get_jwt_identity()  
     print("🔐 Protected Route - Token Data:", identity)
 
     try:
-        username, course = identity.split(':')  # 🔥 Extract values from string
+        username, course = identity.split(':')  
     except ValueError:
         return jsonify({"error": "Invalid token format"}), 400
 
@@ -101,11 +101,11 @@ def protected():
 @routes.route('/subjects1', methods=['GET'])
 @jwt_required()
 def get_subjects1():
-    identity = get_jwt_identity()  # Now in format "username:course"
+    identity = get_jwt_identity() 
     print("🔎 Token Data (identity):", identity)
 
     try:
-        username, course = identity.split(':')  # 🔥 Extract values from string
+        username, course = identity.split(':')  
     except ValueError:
         return jsonify({"error": "Invalid token format"}), 400
 
@@ -121,7 +121,7 @@ def get_subjects1():
 @routes.route('/chapters1/<subject_id>', methods=['GET'])
 @jwt_required()
 def get_chapters1(subject_id):
-    print("✅ Received subject_id:", subject_id)  # Debug log
+    print(" Received subject_id:", subject_id)  
 
     identity = get_jwt_identity()  
     print("🔎 Token Data (Chapters Route):", identity)
@@ -320,7 +320,7 @@ def add_question():
         new_option = Option(
             text=option_text,
             is_correct=is_correct,
-            question_id=new_question.id  # Link options to the newly created question
+            question_id=new_question.id 
         )
         db.session.add(new_option)
 
@@ -380,11 +380,11 @@ WHERE q.id IN (
 @routes.route('/submit-quiz', methods=['POST'])
 @jwt_required()
 def submit_quiz():
-    identity = get_jwt_identity()  # Now in format "username:course"
-    print("🔐 Protected Route - Token Data:", identity)
+    identity = get_jwt_identity()  
+    print(" Protected Route - Token Data:", identity)
 
     try:
-        username, course = identity.split(':')  # 🔥 Extract values from string
+        username, course = identity.split(':')  
     except ValueError:
         return jsonify({"error": "Invalid token format"}), 400
     
@@ -407,13 +407,13 @@ def submit_quiz():
     if not isinstance(user_answers, dict):
         return jsonify({"error": "Invalid data format for userAnswers"}), 400
 
-    # Database connection
+    
     try:
         conn = get_db()
     except Exception as e:
         return jsonify({"error": f"Database connection error: {str(e)}"}), 500
 
-    # Fetch correct answers
+   
     correct_answers = conn.execute('''
         SELECT q.id, o.text AS correct_answer
         FROM question q
@@ -428,11 +428,11 @@ def submit_quiz():
 
     correct_answer_dict = {str(row['id']): row['correct_answer'] for row in correct_answers}
 
-    # Calculate score
+    
     score = sum(1 for q_id, selected_option in user_answers.items()
                 if correct_answer_dict.get(q_id) == selected_option)
 
-    # Insert quiz result
+   
     conn.execute('''
         INSERT INTO quiz_result (user_id, quiz_name, duration, questions_count, score, submission_time)
         VALUES (?, ?, ?, ?, ?, ?)
@@ -455,8 +455,8 @@ def submit_quiz():
 @jwt_required()
 def get_attempted_quizzes():
     try:
-        identity = get_jwt_identity()  # Now in format "username:course"
-        print("🔐 Protected Route - Token Data:", identity)
+        identity = get_jwt_identity()  
+        print(" Protected Route - Token Data:", identity)
 
    
         username, course = identity.split(':')
@@ -475,11 +475,11 @@ def get_attempted_quizzes():
 @jwt_required()
 def get_user_quizzes():
     try:
-        identity = get_jwt_identity()  # Now in format "username:course"
-        print("🔐 Protected Route - Token Data:", identity)
+        identity = get_jwt_identity() 
+        print(" Protected Route - Token Data:", identity)
 
    
-        username, course = identity.split(':')  # 🔥 Extract values from string
+        username, course = identity.split(':') 
     
         
 
@@ -489,7 +489,7 @@ def get_user_quizzes():
         quizzes = conn.execute('SELECT id, quiz_name FROM quiz_result WHERE user_id = ?', (user_id,)).fetchall()
         conn.close()
 
-        quiz_list = [{'id': quiz['id'], 'quiz_name': quiz['quiz_name']} for quiz in quizzes]  # ✅ Include ID
+        quiz_list = [{'id': quiz['id'], 'quiz_name': quiz['quiz_name']} for quiz in quizzes]  
         return jsonify({'user_quizzes': quiz_list})   
 
     except Exception as e:
@@ -529,20 +529,19 @@ def get_quiz_details(quiz_id):
 def download_report():
 
     identity = get_jwt_identity()  # Now in format "username:course"
-    print("🔐 Protected Route - Token Data:", identity)
+    print(" Protected Route - Token Data:", identity)
 
     try:
-        username, course = identity.split(':')  # 🔥 Extract values from string
+        username, course = identity.split(':')  
     except ValueError:
         return jsonify({"error": "Invalid token format"}), 400
-    user_id = username # Fetch user ID from query parameter
-
+    user_id = username 
     
 
     conn = get_db()
     cursor = conn.cursor()
 
-    # Fetch user quiz data
+   
     cursor.execute("""
         SELECT r.quiz_name, r.score, r.duration , r.submission_time
         FROM quiz_result r
@@ -562,7 +561,7 @@ def download_report():
     # CSV Headers
     csv_writer.writerow(["Quiz Name", "Score", "Duration"])
 
-    # CSV Data Rows
+    
     for row in report_data:
         csv_writer.writerow([row["quiz_name"], row["score"], row["duration"],row["submission_time"]])
 
@@ -583,20 +582,20 @@ def get_quiz_summary():
         conn = get_db()
         cursor = conn.cursor()
 
-        # Raw SQL query to get distinct user attempts per quiz_name
+        
         query = """
         SELECT quiz_name, COUNT(user_id) AS user_attempts
         FROM quiz_result
         GROUP BY quiz_name;
         """
 
-        # Execute the query
+       
         cursor.execute(query)
 
-        # Fetch the results
+       
         quiz_data = cursor.fetchall()
 
-        # Format the results into a dictionary
+       
         quiz_summary = [{"quiz_name": quiz[0], "user_attempts": quiz[1]} for quiz in quiz_data]
 
         # Close the cursor and connection
@@ -609,9 +608,9 @@ def get_quiz_summary():
 
 
 @routes.route('/user-summary', methods=['GET'])
-def get_user_summary():   # <-- Fixed function name
+def get_user_summary():   
     try:
-        # Establish connection
+        
         conn = get_db()
         cursor = conn.cursor()
 
@@ -637,7 +636,7 @@ def get_user_summary():   # <-- Fixed function name
             for quiz in quiz_data
         ]
 
-        # Close the cursor and connection
+       
         cursor.close()
 
         return jsonify(user_summary)
@@ -670,7 +669,7 @@ def send_reminders():
 # Function to send reminder emails
 def send_email_reminder(user_email):
     sender_email = "ujjawalrauniyar2004@gmail.com"  # Replace with your email
-    sender_password = "cifylmcwkflrwwes"  # Replace with your email password (use an app password for Gmail)
+    sender_password = "cifylmcwkflrwwes" 
 
     subject = "Daily Quiz Reminder"
     body = "Hello, don't forget to visit the platform to participate in quizzes and improve your knowledge!"
@@ -758,7 +757,7 @@ def get_questions_by_chapter(chapter_id):
                 'id': question_id,
                 'text': question_text,
                 'options': [],
-                'correctAnswer': None  # Set to None initially
+                'correctAnswer': None 
             }
         questions[question_id]['options'].append({'text': option_text})
 
