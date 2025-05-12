@@ -85,9 +85,9 @@
       };
     },
     created() {
-    this.fetchQuestions();   // ✅ Only fetch questions directly
+    this.fetchQuestions();   
     this.remainingTime = (parseInt(this.$route.query.duration) || 5) * 60;  // Default 5 mins
-    this.startTimer();       // ✅ Start timer directly
+    this.startTimer();       
 },
 
 
@@ -156,7 +156,7 @@
     },
     handleSelection(questionId, selectedOption) {
     this.userAnswers = { ...this.userAnswers, [String(questionId)]: selectedOption };
-    console.log(`✅ Question ID: ${questionId}, Selected Option: ${selectedOption}`);
+    console.log(` Question ID: ${questionId}, Selected Option: ${selectedOption}`);
 
 
 
