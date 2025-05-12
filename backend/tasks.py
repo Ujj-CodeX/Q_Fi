@@ -49,7 +49,7 @@ def send_report_email(email, name, total_quizzes, total_score, avg_score):
             <li>Total Score: <strong>{total_score}</strong></li>
             <li>Average Score: <strong>{round(avg_score, 2)}</strong></li>
         </ul>
-        <p>Good luck for the next month! 😊</p>
+        <p>Good luck for the next month! </p>
     </body>
     </html>
     """
@@ -67,6 +67,6 @@ def send_report_email(email, name, total_quizzes, total_score, avg_score):
             server.starttls()
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, email, msg.as_string())
-            print(f"✅ Report sent to {email}")
+            print(f" Report sent to {email}")
     except Exception as e:
-        print(f"❌ Error sending report to {email}: {e}")
+        print(f" Error sending report to {email}: {e}")
