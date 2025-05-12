@@ -86,7 +86,7 @@ def login():
 @jwt_required()
 def protected():
     identity = get_jwt_identity()  
-    print("🔐 Protected Route - Token Data:", identity)
+    print(" Protected Route - Token Data:", identity)
 
     try:
         username, course = identity.split(':')  
