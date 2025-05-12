@@ -68,24 +68,24 @@
   .then(data => {
     console.log("📋 Quiz Data:", data);
     
-    // ✅ Store both id and quiz_name
+    
     this.quizzes = data.user_quizzes.map(quiz => ({
       id: quiz.id, 
       quiz_name: quiz.quiz_name 
     }));
   })
-  .catch(err => console.error('❌ Error:', err));
+  .catch(err => console.error(' Error:', err));
     },
     methods: {
       fetchQuizDetails() {
-  console.log("🟣 Selected Quiz ID:", this.selectedQuiz);
+  console.log(" Selected Quiz ID:", this.selectedQuiz);
 
   if (!this.selectedQuiz) {
     alert("Please select a quiz first.");
     return;
   }
 
-  fetch(`http://localhost:5000/quiz-details/${this.selectedQuiz}`, {  // ✅ Now using quiz ID
+  fetch(`http://localhost:5000/quiz-details/${this.selectedQuiz}`, {  
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
@@ -101,7 +101,7 @@
       this.quizDetails = data;
     })
     .catch(err => {
-      console.error('❌ Fetch Error:', err);
+      console.error(' Fetch Error:', err);
       alert("Failed to load quiz details. Please try again.");
     });
 },
@@ -121,7 +121,7 @@
           link.click();
           link.remove();
         })
-        .catch(err => console.error('❌ Error downloading report:', err));
+        .catch(err => console.error(' Error downloading report:', err));
     }
     }
   };
